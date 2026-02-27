@@ -8,45 +8,41 @@ namespace OneAccountManagement
 {
     internal class Program
     {
-        static string[] usernames = new string[3];
-        static string[] passwords = new string[3];
-        static List<string> accessLogs = new List<string>();
+        static List<string> accesslogs = new List<string>();
+        static List<string> usernames = new List<string>();
+        static List<string> passwords = new List<string>();
 
         static void Main(string[] args)
         {
-            Console.WriteLine("ACCOUNT MANAGEMENT SYSTEM");
+            Console.WriteLine("ACCOUNT MANAGEMENT SYSYEM");
 
-            PopulateData();
+            PopulateDefaultAccounts();
 
-            bool isLogin = LoginOption();
+            bool isLogin = ShowLoginOption();
 
             while (isLogin)
             {
-                for (int i = 0; i < 3; i++)
-                {
-                    if (UserLogin())
-                    {
-                        Console.WriteLine("Login Successful!");
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid Credentials.");
-                    }
-                }
+                Login();
 
-                isLogin = LoginOption();
+                isLogin = ShowLoginOption();
             }
-
-            DisplayLogs();
         }
 
-        static bool LoginOption()
+        static void PopulateDefaultAccounts()
+        {
+            usernames.Add("admin");
+            usernames.Add("user");
+            usernames.Add("guest");
+            passwords.Add("admin123!");
+            passwords.Add("user123!");
+            passwords.Add("guest123!");
+        }
+
+        static bool ShowLoginOption()
         {
             Console.Write("Do you want to login? y/n: ");
-            string loginInput = Console.ReadLine();
-
             bool isLogin = false;
+            string loginInput = Console.ReadLine();
 
             switch (loginInput)
             {
@@ -57,7 +53,7 @@ namespace OneAccountManagement
                     isLogin = false;
                     break;
                 default:
-                    Console.WriteLine("Invalid input. System will exit.");
+                    Console.WriteLine("Incorrect input. The system will exit.");
                     Environment.Exit(0);
                     break;
             }
@@ -65,56 +61,180 @@ namespace OneAccountManagement
             return isLogin;
         }
 
-        static void PopulateData()
+        static void DisplayLogs()
         {
-            usernames[0] = "admin";
-            usernames[1] = "superuser";
-            usernames[2] = "guest";
-
-            passwords[0] = "admin123!";
-            passwords[1] = "superuser123!";
-            passwords[2] = "guest123!";
-
-        }
-
-        static void AddAccessLogs(string usernameInput, string passwordInput, bool isMatched)
-        {
-            accessLogs.Add($"username: {usernameInput}, password: {passwordInput}, Is Success?: {isMatched}");
-        }
-
-        static bool UserLogin()
-        {
-            Console.Write("Enter username: ");
-            string usernameInput = Console.ReadLine();
-            Console.Write("Enter password: ");
-            string passwordInput = Console.ReadLine();
-
-            bool isMatched = false;
-
-            for (int x = 0; x < usernames.Length; x++)
+            foreach (var log in accesslogs)
             {
-                if (usernameInput == usernames[x] && passwordInput == passwords[x])
+                Console.WriteLine(log);
+            }
+        }
+
+        static void Login()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Console.Write("Enter username: ");
+                string usernameInput = Console.ReadLine();
+                Console.Write("Enter password: ");
+                string passwordInput = Console.ReadLine();
+                bool isMatched = false;
+
+                for (int x = 0; x < passwords.Count; x++)
                 {
-                    isMatched = true;
+                    if (usernameInput == usernames[x] && passwordInput == passwords[x])
+                    {
+                        isMatched = true;
+                        break;
+                    }
+                    else
+                    {
+                        isMatched = false;
+                    }
+                }
+
+                AddAccessLogs(usernameInput, passwordInput, isMatched);
+
+                if (isMatched)
+                {
+                    Console.WriteLine("Login Successful!");
+
+                    switch (usernameInput)
+                    {
+                        case "admin":
+                            AdminMenu();
+                            break;
+                        case "user":
+                            break;
+                        case "guest":
+                            break;
+                        default:
+                            break;
+                    }
                     break;
                 }
                 else
                 {
-                    isMatched = false;
+                    Console.WriteLine("Incorrect Credentials.");
                 }
             }
 
-            AddAccessLogs(usernameInput, passwordInput, isMatched);
 
-            return isMatched;
         }
 
-        static void DisplayLogs()
+        static void AddAccessLogs(string username, string password, bool status)
         {
-            foreach (var log in accessLogs)
+            accesslogs.Add($"username: {username}, password: {password}, Is Successful?: {status}");
+        }
+
+        static void AdminMenu()
+        {
+
+            Console.WriteLine("\n----------\n ADMIN MENU:");
+            string[] superuseroptions = new string[] { "View Users", "Add User", "Update User", "Delete User", "Display Logs" };
+            ShowOptions(superuseroptions);
+
+            string option = Console.ReadLine();
+
+            switch (option)
             {
-                Console.WriteLine(log);
+                case "1":
+                    ViewUsers();
+                    break;
+                case "2":
+                    AddUser();
+                    break;
+                case "3":
+                    UpdateUser();
+                    break;
+                case "4":
+                    //DeleteUser();
+                    break;
+                case "5":
+                    DisplayLogs();
+                    break;
+                default:
+                    Console.WriteLine("Invalid.");
+                    break;
             }
+        }
+
+        private static void UpdateUser()
+        {
+            Console.WriteLine("UPDATE USER: ");
+            Console.Write("Enter the username of the user you want to update: ");
+            string findUser = Console.ReadLine();
+
+            for (int i = 0; i < usernames.Count; i++)
+            {
+                if (usernames[i] == findUser)
+                {
+                    Console.WriteLine("enter new username: ");
+                    string newusername = Console.ReadLine();
+                    Console.WriteLine("enter new password: ");
+                    string newpassword = Console.ReadLine();
+
+                    if (ValidateUserName(newusername))
+                    {
+                        usernames[i] = newusername;
+                        passwords[i] = newpassword;
+                    }
+                    else
+                    {
+                        Console.WriteLine("user name already exists.");
+                    }
+
+                }
+            }
+
+            AdminMenu();
+        }
+
+        private static bool ValidateUserName(string username)
+        {
+            bool valid = true;
+            foreach (var un in usernames)
+            {
+                if (un == username)
+                {
+                    valid = false;
+                }
+            }
+            return valid;
+        }
+
+        private static void AddUser()
+        {
+            Console.WriteLine("ADDING USER: Enter the necessary information");
+            Console.Write("username: ");
+            string username = Console.ReadLine();
+            Console.Write("password: ");
+            string password = Console.ReadLine();
+            usernames.Add(username);
+            passwords.Add(password);
+            Console.WriteLine($"Successfully added user {username}");
+            AdminMenu();
+        }
+
+        private static void ViewUsers()
+        {
+            Console.WriteLine("\nHere are the list of users.. ");
+
+            for (int i = 0; i < usernames.Count; i++)
+            {
+                Console.WriteLine($"[{i + 1}] username: {usernames[i]}, password: {passwords[i]}");
+            }
+
+            AdminMenu();
+        }
+
+
+        static void ShowOptions(string[] options)
+        {
+            for (int x = 0; x < options.Length; x++)
+            {
+                Console.WriteLine($"[{x + 1}] {options[x]}");
+            }
+            Console.Write("Enter the number of your option: ");
         }
     }
 }
