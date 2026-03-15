@@ -3,13 +3,9 @@
   <Class Name="OneAccountManagement.Program">
     <Position X="2.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ACAAACAgAAAABAAAAQAABAEAAQAAAQAgAAAYBgAIAAA=</HashCode>
+      <HashCode>ACAAACAgAAAABAABAQAAAAEAAQAAAQAgAAAYBgAIAAA=</HashCode>
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="AccountManagementAppService.AccountService">
-    <Position X="5.5" Y="1.25" Width="1.5" />
-    <TypeIdentifier />
   </Class>
   <Class Name="AccountManagementDataService.AccountDataService">
     <Position X="7.5" Y="2.25" Width="3" />
